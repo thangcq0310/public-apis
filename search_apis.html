@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Public APIs - Tìm Kiếm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .search-box {
+            background: white;
+            border-radius: 50px;
+            padding: 15px 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-box input {
+            flex: 1;
+            min-width: 250px;
+            padding: 10px 15px;
+            border: none;
+            font-size: 1em;
+            outline: none;
+        }
+        
+        .search-box input::placeholder {
+            color: #999;
+        }
+        
+        .filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 8px 15px;
+            border: 2px solid #667eea;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+        
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+        }
+        
+        .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .stats {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            color: #333;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .api-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .api-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .api-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .api-name {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+        
+        .api-name a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        
+        .api-name a:hover {
+            text-decoration: underline;
+        }
+        
+        .api-desc {
+            color: #555;
+            margin-bottom: 15px;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+        
+        .api-category {
+            display: inline-block;
+            background: #f0f0f0;
+            color: #666;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-bottom: 10px;
+        }
+        
+        .api-meta {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        
+        .meta-tag {
+            padding: 4px 10px;
+            border-radius: 5px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+        
+        .auth-tag {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .https-yes {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+        
+        .https-no {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .cors-yes {
+            background: #f3e5f5;
+            color: #6a1b9a;
+        }
+        
+        .cors-unknown {
+            background: #fff3e0;
+            color: #e65100;
+        }
+        
+        .no-results {
+            text-align: center;
+            color: white;
+            padding: 40px;
+            font-size: 1.2em;
+        }
+        
+        .footer {
+            text-align: center;
+            color: white;
+            opacity: 0.8;
+            margin-top: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .api-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Public APIs - Tìm Kiếm</h1>
+            <p class="subtitle">Khám phá hơn 1400+ API miễn phí</p>
+        </header>
+        
+        <div class="search-box">
+            <input 
+                type="text" 
+                id="searchInput" 
+                placeholder="Tìm API (ví dụ: Weather, Finance, Bitcoin)..."
+                autocomplete="off"
+            >
+            <div class="filters">
+                <button class="filter-btn" onclick="toggleFilter('https')">
+                    🔒 HTTPS Only
+                </button>
+                <button class="filter-btn" onclick="toggleFilter('cors')">
+                    ✓ CORS
+                </button>
+                <button class="filter-btn" onclick="toggleFilter('no-auth')">
+                    ✨ No Auth
+                </button>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <span id="resultCount">Đang tải...</span>
+        </div>
+        
+        <div class="api-list" id="apiList"></div>
+        
+        <div class="footer">
+            <p>💡 Tip: Click vào API name để mở trang web</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">
+                Dữ liệu từ <a href="https://github.com/public-apis/public-apis" style="color: white;">Public APIs Repository</a>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        let apis = [];
+        let filteredApis = [];
+        const filters = {
+            https: false,
+            cors: false,
+            'no-auth': false
+        };
+        
+        // Tải dữ liệu API
+        async function loadAPIs() {
+            try {
+                const response = await fetch('apis_data.json');
+                apis = await response.json();
+                console.log(`✅ Loaded ${apis.length} APIs`);
+                renderAPIs(apis);
+                updateStats(apis.length);
+            } catch (error) {
+                console.error('Error loading APIs:', error);
+                document.getElementById('apiList').innerHTML = 
+                    '<div class="no-results">❌ Không thể tải dữ liệu APIs. Hãy chắc chắn file apis_data.json có trong cùng thư mục.</div>';
+            }
+        }
+        
+        // Render APIs
+        function renderAPIs(apisToRender) {
+            const apiList = document.getElementById('apiList');
+            
+            if (apisToRender.length === 0) {
+                apiList.innerHTML = '<div class="no-results">😔 Không tìm thấy API nào phù hợp.</div>';
+                return;
+            }
+            
+            apiList.innerHTML = apisToRender.map(api => `
+                <div class="api-card">
+                    <div class="api-category">${api.category}</div>
+                    <div class="api-name">
+                        <a href="${api.url}" target="_blank" rel="noopener">${api.name}</a>
+                    </div>
+                    <div class="api-desc">${api.desc}</div>
+                    <div class="api-meta">
+                        <span class="meta-tag auth-tag">Auth: ${api.auth}</span>
+                        <span class="meta-tag ${api.https === 'Yes' ? 'https-yes' : 'https-no'}">
+                            HTTPS: ${api.https}
+                        </span>
+                        <span class="meta-tag ${api.cors === 'Yes' ? 'cors-yes' : 'cors-unknown'}">
+                            CORS: ${api.cors}
+                        </span>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Tìm kiếm
+        function performSearch() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            
+            filteredApis = apis.filter(api => {
+                // Tìm kiếm theo tên, mô tả, danh mục
+                const matchesSearch = 
+                    api.name.toLowerCase().includes(searchTerm) ||
+                    api.desc.toLowerCase().includes(searchTerm) ||
+                    api.category.toLowerCase().includes(searchTerm);
+                
+                if (!matchesSearch) return false;
+                
+                // Áp dụng bộ lọc
+                if (filters.https && api.https !== 'Yes') return false;
+                if (filters.cors && api.cors !== 'Yes') return false;
+                if (filters['no-auth'] && api.auth !== 'No') return false;
+                
+                return true;
+            });
+            
+            renderAPIs(filteredApis);
+            updateStats(filteredApis.length);
+        }
+        
+        // Toggle filter
+        function toggleFilter(filterName) {
+            filters[filterName] = !filters[filterName];
+            
+            // Update button appearance
+            const btn = event.target;
+            btn.classList.toggle('active');
+            
+            performSearch();
+        }
+        
+        // Update stats
+        function updateStats(count) {
+            const searchTerm = document.getElementById('searchInput').value;
+            let statsText = `📊 Tìm thấy <strong>${count}</strong> API`;
+            
+            if (searchTerm) {
+                statsText += ` cho "${searchTerm}"`;
+            } else {
+                statsText += ` (tổng cộng ${apis.length} APIs)`;
+            }
+            
+            // Add active filters info
+            const activeFilters = Object.keys(filters).filter(k => filters[k]);
+            if (activeFilters.length > 0) {
+                statsText += ` | Bộ lọc: <strong>${activeFilters.join(', ')}</strong>`;
+            }
+            
+            document.getElementById('resultCount').innerHTML = statsText;
+        }
+        
+        // Event listeners
+        document.getElementById('searchInput').addEventListener('input', performSearch);
+        document.getElementById('searchInput').addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') performSearch();
+        });
+        
+        // Load initial data
+        loadAPIs();
+    </script>
+</body>
+</html>
