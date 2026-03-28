@@ -55,10 +55,16 @@ print(f"✅ Tìm thấy {len(apis)} APIs")
 # Lưu dữ liệu JSON
 with open('apis_data.json', 'w', encoding='utf-8') as f:
     json.dump(apis, f, ensure_ascii=False, indent=2)
-
 print(f"💾 Đã lưu vào apis_data.json")
 
-# Kiểm tra lại file
+# Lưu dữ liệu JS để search_apis.html có thể load trực tiếp
+with open('apis_data.js', 'w', encoding='utf-8') as f:
+    f.write('const apisData = ')
+    json.dump(apis, f, ensure_ascii=False)
+    f.write(';')
+print(f"💾 Đã lưu vào apis_data.js")
+
+# Kiểm tra lại file JSON
 with open('apis_data.json', 'r', encoding='utf-8') as f:
     data = json.load(f)
     print(f"✅ Dữ liệu có thể đọc được: {len(data)} APIs")

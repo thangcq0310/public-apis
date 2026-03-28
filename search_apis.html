@@ -200,6 +200,60 @@
             padding: 40px;
             font-size: 1.2em;
         }
+
+        .contribute-box {
+            background: rgba(255, 255, 255, 0.12);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .contribute-box h2 {
+            margin-bottom: 8px;
+        }
+
+        .contribute-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .contribute-form input,
+        .contribute-form select {
+            padding: 8px 10px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            min-width: 165px;
+            flex: 1;
+        }
+
+        .contribute-form button {
+            padding: 8px 14px;
+            border: none;
+            background: #29b6f6;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .contribute-form button:hover {
+            background: #0288d1;
+        }
+
+        #markdownOutput {
+            width: 100%;
+            min-height: 85px;
+            border-radius: 8px;
+            border: 1px solid #bbb;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #000;
+            resize: vertical;
+        }
         
         .footer {
             text-align: center;
@@ -251,6 +305,37 @@
         </div>
         
         <div class="api-list" id="apiList"></div>
+
+        <div class="contribute-box">
+            <h2>🛠️ Thêm API mới (Markdown nhanh)</h2>
+            <p>Điền thông tin để tạo nhanh dòng Markdown sử dụng cho pull request:</p>
+            <div class="contribute-form">
+                <input id="apiName" type="text" placeholder="API Name" />
+                <input id="apiUrl" type="text" placeholder="URL (https://...)" />
+                <input id="apiDesc" type="text" placeholder="Description (tối đa 100 ký tự)" />
+                <input id="apiCategory" type="text" placeholder="Category (ví dụ: Weather)" />
+                <select id="apiAuth">
+                    <option value="No">No</option>
+                    <option value="apiKey">apiKey</option>
+                    <option value="OAuth">OAuth</option>
+                    <option value="X-Mashape-Key">X-Mashape-Key</option>
+                    <option value="User-Agent">User-Agent</option>
+                </select>
+                <select id="apiHttps">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+                <select id="apiCors">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                    <option value="Unknown">Unknown</option>
+                </select>
+                <button onclick="generateMarkdownEntry()">Tạo Markdown</button>
+                <button onclick="copyMarkdown()">Sao chép vào clipboard</button>
+            </div>
+            <textarea id="markdownOutput" readonly placeholder="Dòng Markdown sẽ hiện ở đây"></textarea>
+            <p style="font-size: 0.9em; color: #fff; opacity: 0.85; margin-top: 8px;">Sao chép dòng này, dán vào `README.md` dưới mục category tương ứng.</p>
+        </div>
         
         <div class="footer">
             <p>💡 Tip: Click vào API name để mở trang web</p>
@@ -341,6 +426,38 @@
             
             renderAPIs(filteredApis);
             updateStats(filteredApis.length);
+        }
+
+        // Tạo dòng Markdown để dán vào README.md
+        function generateMarkdownEntry() {
+            const name = document.getElementById('apiName').value.trim();
+            const url = document.getElementById('apiUrl').value.trim();
+            const desc = document.getElementById('apiDesc').value.trim();
+            const category = document.getElementById('apiCategory').value.trim();
+            const auth = document.getElementById('apiAuth').value;
+            const https = document.getElementById('apiHttps').value;
+            const cors = document.getElementById('apiCors').value;
+
+            if (!name || !url || !desc || !category) {
+                alert('Vui lòng điền đủ Name, URL, Description và Category.');
+                return;
+            }
+
+            const safeDesc = desc.length > 100 ? desc.slice(0, 97) + '...' : desc;
+
+            const markdown = `| [${name}](${url}) | ${safeDesc} | ${auth} | ${https} | ${cors} | [Run in Postman Button] |`;
+            document.getElementById('markdownOutput').value = markdown;
+        }
+
+        function copyMarkdown() {
+            const output = document.getElementById('markdownOutput');
+            if (!output.value.trim()) {
+                alert('Chưa có Markdown để sao chép. Hãy tạo trước.');
+                return;
+            }
+            output.select();
+            document.execCommand('copy');
+            alert('Đã sao chép Markdown vào clipboard!');
         }
         
         // Toggle filter

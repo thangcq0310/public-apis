@@ -41,7 +41,19 @@ Join our [Discord server](https://discord.com/invite/hgjA78638n/?utm_source=Gith
 * [API for this project](https://github.com/davemachado/public-api)
 * [Issues](https://github.com/public-apis/public-apis/issues)
 * [Pull Requests](https://github.com/public-apis/public-apis/pulls)
-* [LICENSE](LICENSE) 
+* [LICENSE](LICENSE)
+
+## Local contribution helper
+
+1. Tại cuối project, chạy:
+   * `python generate_apis.py` (tạo `apis_data.json` + `apis_data.js`)
+   * `python server.py` (mở `http://localhost:8000/search_apis.html`)
+2. Mục “🛠️ Thêm API mới (Markdown nhanh)” đã được thêm vào `search_apis.html`.
+3. Điền API và nhấn “Tạo Markdown”, sau đó “Sao chép vào clipboard”.
+4. Dán vào `README.md` trong section category tương ứng.
+5. `git add README.md`, `git commit -m "Add <API-name> API"`, `git push` + tạo PR vào `master`.
+
+> Ghi chú: Nếu PR được chấp nhận, chạy lại `python generate_apis.py` để đồng bộ lại dữ liệu UI. 
 
 <br />
 
