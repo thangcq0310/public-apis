@@ -1107,15 +1107,6 @@
     "category": "Index"
   },
   {
-    "name": "Charity Search",
-    "url": "http://charityapi.orghunter.com/",
-    "desc": "Non-profit charity data",
-    "auth": "`apiKey`",
-    "https": "No",
-    "cors": "Unknown",
-    "category": "Index"
-  },
-  {
     "name": "Clearbit Logo",
     "url": "https://clearbit.com/docs#logo-api",
     "desc": "Search for company logos and embed them in your projects",

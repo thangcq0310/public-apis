@@ -260,6 +260,7 @@
         </div>
     </div>
     
+    <script src="apis_data.js"></script>
     <script>
         let apis = [];
         let filteredApis = [];
@@ -270,17 +271,21 @@
         };
         
         // Tải dữ liệu API
-        async function loadAPIs() {
+        function loadAPIs() {
             try {
-                const response = await fetch('apis_data.json');
-                apis = await response.json();
-                console.log(`✅ Loaded ${apis.length} APIs`);
-                renderAPIs(apis);
-                updateStats(apis.length);
+                // Dữ liệu đã được load từ apis_data.js
+                if (typeof apisData !== 'undefined' && apisData.length > 0) {
+                    apis = apisData;
+                    console.log(`✅ Loaded ${apis.length} APIs`);
+                    renderAPIs(apis);
+                    updateStats(apis.length);
+                } else {
+                    throw new Error('apisData not found');
+                }
             } catch (error) {
                 console.error('Error loading APIs:', error);
                 document.getElementById('apiList').innerHTML = 
-                    '<div class="no-results">❌ Không thể tải dữ liệu APIs. Hãy chắc chắn file apis_data.json có trong cùng thư mục.</div>';
+                    '<div class="no-results">❌ Không thể tải dữ liệu APIs. Hãy chắc chắn file apis_data.js có trong cùng thư mục.</div>';
             }
         }
         
